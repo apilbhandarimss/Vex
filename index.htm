@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VEX v0.2.0 — Complete Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;1,9..144,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #0d0f0e;
+    --surface:   #141714;
+    --border:    #232823;
+    --accent:    #a8ff78;
+    --accent2:   #78c8ff;
+    --accent3:   #ff9d78;
+    --muted:     #4a5249;
+    --text:      #d9e8d5;
+    --text-dim:  #7a9177;
+    --code-bg:   #0a0c0a;
+    --red:       #ff6b6b;
+    --yellow:    #ffd97d;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.7;
+    font-size: 15px;
+  }
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--muted); border-radius: 2px; }
+
+  .logo-mark {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+  .logo-icon {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+  }
+  .logo-text-block { display: flex; flex-direction: column; }
+  .vex-word {
+    font-family: 'DM Mono', monospace;
+    font-size: 22px;
+    color: var(--accent);
+    letter-spacing: -1px;
+    line-height: 1;
+  }
+  .vex-ver {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    display: block;
+    margin-top: 3px;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 0; left: 0;
+    width: 240px;
+    height: 100vh;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    z-index: 100;
+    padding: 28px 0 40px;
+  }
+  .sidebar-logo {
+    padding: 0 24px 20px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 20px;
+  }
+
+  .sidebar-actions {
+    padding: 0 16px 20px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .dl-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 5px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    border: 1px solid;
+    text-decoration: none;
+    transition: all 0.15s;
+    width: 100%;
+    background: none;
+    text-align: left;
+  }
+  .dl-btn svg { flex-shrink: 0; }
+  .dl-btn.primary {
+    border-color: rgba(168,255,120,0.4);
+    color: var(--accent);
+    background: rgba(168,255,120,0.06);
+  }
+  .dl-btn.primary:hover {
+    background: rgba(168,255,120,0.14);
+    border-color: rgba(168,255,120,0.7);
+    box-shadow: 0 0 12px rgba(168,255,120,0.12);
+  }
+  .dl-btn.secondary {
+    border-color: rgba(120,200,255,0.3);
+    color: var(--accent2);
+    background: rgba(120,200,255,0.04);
+  }
+  .dl-btn.secondary:hover {
+    background: rgba(120,200,255,0.12);
+    border-color: rgba(120,200,255,0.6);
+    box-shadow: 0 0 12px rgba(120,200,255,0.1);
+  }
+  .dl-btn.tertiary {
+    border-color: rgba(255,157,120,0.3);
+    color: var(--accent3);
+    background: rgba(255,157,120,0.04);
+  }
+  .dl-btn.tertiary:hover {
+    background: rgba(255,157,120,0.12);
+    border-color: rgba(255,157,120,0.6);
+  }
+  .dl-btn-label { display: flex; flex-direction: column; }
+  .dl-btn-title { font-size: 11px; font-weight: 500; }
+  .dl-btn-sub { font-size: 9px; color: var(--muted); margin-top: 1px; letter-spacing: 1.5px; text-transform: uppercase; }
+
+  @keyframes flash { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  .dl-btn.flashing { animation: flash 0.3s ease; }
+
+  .nav-group-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 16px 24px 6px;
+  }
+  .nav-link {
+    display: block;
+    padding: 6px 24px;
+    text-decoration: none;
+    color: var(--text-dim);
+    font-size: 13px;
+    transition: color 0.15s, background 0.15s;
+    border-left: 2px solid transparent;
+  }
+  .nav-link:hover, .nav-link.active {
+    color: var(--accent);
+    background: rgba(168,255,120,0.04);
+    border-left-color: var(--accent);
+  }
+
+  .main { margin-left: 240px; max-width: 860px; padding: 60px 56px 120px; }
+
+  .hero { padding-bottom: 60px; border-bottom: 1px solid var(--border); margin-bottom: 60px; }
+  .hero-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+  }
+  .hero h1 {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(36px,5vw,58px);
+    font-weight: 700;
+    line-height: 1.1;
+    color: #fff;
+    margin-bottom: 20px;
+  }
+  .hero h1 em { font-style: italic; color: var(--accent); }
+  .hero-desc { font-size: 16px; color: var(--text-dim); max-width: 540px; line-height: 1.8; }
+  .hero-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 24px; }
+  .tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    padding: 3px 10px;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    color: var(--text-dim);
+    background: var(--surface);
+  }
+  .tag.green  { border-color: rgba(168,255,120,0.3); color: var(--accent); background: rgba(168,255,120,0.05); }
+  .tag.blue   { border-color: rgba(120,200,255,0.3); color: var(--accent2); background: rgba(120,200,255,0.05); }
+  .tag.orange { border-color: rgba(255,157,120,0.3); color: var(--accent3); background: rgba(255,157,120,0.05); }
+
+  section { margin-bottom: 72px; scroll-margin-top: 30px; }
+  .section-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  h2 { font-family: 'Fraunces', serif; font-size: 30px; font-weight: 700; color: #fff; line-height: 1.2; margin-bottom: 20px; }
+  h3 { font-family: 'Fraunces', serif; font-size: 19px; font-weight: 300; font-style: italic; color: var(--accent); margin: 36px 0 12px; }
+  h4 { font-family: 'DM Mono', monospace; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--accent2); margin: 28px 0 10px; }
+  p { margin-bottom: 14px; color: var(--text-dim); line-height: 1.85; }
+  strong { color: var(--text); font-weight: 500; }
+
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 4px;
+    padding: 20px 22px;
+    overflow-x: auto;
+    margin: 18px 0;
+    position: relative;
+  }
+  pre code { font-family: 'DM Mono', monospace; font-size: 13px; line-height: 1.75; color: #b8d4b0; white-space: pre; }
+  code {
+    font-family: 'DM Mono', monospace;
+    font-size: 12.5px;
+    background: rgba(168,255,120,0.06);
+    border: 1px solid rgba(168,255,120,0.12);
+    padding: 1px 6px;
+    border-radius: 3px;
+    color: var(--accent);
+  }
+  pre code { background: none; border: none; padding: 0; color: inherit; font-size: 13px; }
+  .c-comment  { color: #4a6a44; }
+  .c-keyword  { color: #ff9d78; }
+  .c-type     { color: #78c8ff; }
+  .c-fn       { color: #a8ff78; }
+  .c-str      { color: #ffd97d; }
+  .c-num      { color: #ff9d78; }
+  .c-macro    { color: #c084fc; }
+
+  .callout { border: 1px solid var(--border); border-radius: 6px; padding: 18px 22px; margin: 20px 0; background: var(--surface); }
+  .callout.note { border-left: 3px solid var(--accent2); }
+  .callout.warn { border-left: 3px solid var(--yellow); }
+  .callout.tip  { border-left: 3px solid var(--accent); }
+  .callout.key  { border-left: 3px solid var(--accent3); }
+  .callout-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
+  .callout.note .callout-label { color: var(--accent2); }
+  .callout.warn .callout-label { color: var(--yellow); }
+  .callout.tip  .callout-label { color: var(--accent); }
+  .callout.key  .callout-label { color: var(--accent3); }
+  .callout p { margin: 0; }
+
+  table { width: 100%; border-collapse: collapse; margin: 18px 0; font-size: 13.5px; }
+  th {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+    background: var(--surface);
+  }
+  td { padding: 10px 14px; border-bottom: 1px solid rgba(35,40,35,0.5); color: var(--text-dim); vertical-align: top; }
+  td:first-child { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--accent); }
+  tr:last-child td { border-bottom: none; }
+
+  .flow { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; padding: 20px; background: var(--code-bg); border: 1px solid var(--border); border-radius: 6px; margin: 18px 0; font-family: 'DM Mono', monospace; font-size: 12px; }
+  .flow-box { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 6px 12px; color: var(--accent); white-space: nowrap; }
+  .flow-box.dim { color: var(--text-dim); border-color: rgba(35,40,35,0.7); }
+  .flow-box.orange { color: var(--accent3); border-color: rgba(255,157,120,0.3); }
+  .flow-box.blue { color: var(--accent2); border-color: rgba(120,200,255,0.3); }
+  .flow-arrow { color: var(--muted); font-size: 16px; padding: 0 2px; }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 18px 0; }
+  .grid-card { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 18px; }
+  .grid-card-title { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--accent); letter-spacing: 1px; margin-bottom: 8px; text-transform: uppercase; }
+  .grid-card p { margin: 0; font-size: 13px; }
+
+  .divider { border: none; border-top: 1px solid var(--border); margin: 56px 0; }
+
+  .repl { background: var(--code-bg); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; margin: 18px 0; }
+  .repl-header { background: var(--surface); padding: 8px 16px; border-bottom: 1px solid var(--border); font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); display: flex; align-items: center; gap: 8px; }
+  .repl-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .repl-dot.r { background: #ff5f57; }
+  .repl-dot.y { background: #febc2e; }
+  .repl-dot.g { background: #28c840; }
+  .repl-body { padding: 18px 22px; }
+  .repl-line { font-family: 'DM Mono', monospace; font-size: 13px; line-height: 1.9; }
+  .repl-prompt { color: var(--accent); margin-right: 4px; }
+  .repl-input  { color: #d9e8d5; }
+  .repl-output { color: var(--accent2); padding-left: 22px; }
+  .repl-comment { color: var(--muted); font-style: italic; padding-left: 22px; font-size: 11px; }
+
+  #toast {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    background: var(--surface);
+    border: 1px solid rgba(168,255,120,0.3);
+    color: var(--accent);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    padding: 10px 18px;
+    border-radius: 5px;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.2s, transform 0.2s;
+    pointer-events: none;
+    z-index: 999;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  }
+  #toast.show { opacity: 1; transform: translateY(0); }
+
+  footer { margin-top: 80px; padding-top: 30px; border-top: 1px solid var(--border); font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); text-align: center; }
+
+  @media (max-width: 768px) {
+    .sidebar { display: none; }
+    .main { margin-left: 0; padding: 30px 22px 80px; }
+    .grid-2 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">
+      <svg class="logo-icon" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="36" height="36" rx="6" fill="#0a0c0a"/>
+        <rect x="0.5" y="0.5" width="35" height="35" rx="5.5" stroke="#a8ff78" stroke-opacity="0.25"/>
+        <polyline points="8,13 14,18 8,23" stroke="#a8ff78" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="17" y="14" width="11" height="8" rx="1" fill="#a8ff78" opacity="0.9"/>
+        <line x1="4" y1="7" x2="32" y2="7" stroke="#a8ff78" stroke-opacity="0.08" stroke-width="1"/>
+        <line x1="4" y1="29" x2="32" y2="29" stroke="#a8ff78" stroke-opacity="0.08" stroke-width="1"/>
+      </svg>
+      <div class="logo-text-block">
+        <div class="vex-word">VEX</div>
+        <span class="vex-ver">v0.2.0 · guide</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="sidebar-actions">
+    <button class="dl-btn primary" onclick="downloadSource()">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+        <path d="M2 11v2a1 1 0 001 1h10a1 1 0 001-1v-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M8 2v8M5 8l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div class="dl-btn-label">
+        <span class="dl-btn-title">Source Code</span>
+        <span class="dl-btn-sub">vex.c · C file</span>
+      </div>
+    </button>
+    <button class="dl-btn secondary" onclick="downloadBuildInfo()">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+        <rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M5 6l2 2-2 2M8 10h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div class="dl-btn-label">
+        <span class="dl-btn-title">Build Guide</span>
+        <span class="dl-btn-sub">compile instructions</span>
+      </div>
+    </button>
+    <button class="dl-btn tertiary" onclick="downloadGuide()">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+        <path d="M9 2H4a1 1 0 00-1 1v10a1 1 0 001 1h8a1 1 0 001-1V6L9 2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+        <path d="M9 2v4h4" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+        <path d="M5 9h6M5 11h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <div class="dl-btn-label">
+        <span class="dl-btn-title">This Guide</span>
+        <span class="dl-btn-sub">HTML · offline</span>
+      </div>
+    </button>
+  </div>
+
+  <div class="nav-group-label">Introduction</div>
+  <a href="#overview"   class="nav-link">What is VEX?</a>
+  <a href="#howtorun"   class="nav-link">How to Compile & Run</a>
+  <div class="nav-group-label">Core Concepts</div>
+  <a href="#repl"       class="nav-link">The REPL Loop</a>
+  <a href="#variables"  class="nav-link">Variables</a>
+  <a href="#operators"  class="nav-link">Operators & Precedence</a>
+  <a href="#constants"  class="nav-link">Built-in Constants</a>
+  <a href="#functions"  class="nav-link">Built-in Functions</a>
+  <div class="nav-group-label">Under the Hood</div>
+  <a href="#s1-consts"  class="nav-link">Section 1 — Constants Table</a>
+  <a href="#s2-funcs"   class="nav-link">Section 2 — Functions Table</a>
+  <a href="#s3-vars"    class="nav-link">Section 3 — Variable Store</a>
+  <a href="#s4-parse"   class="nav-link">Section 4 — Parser Utilities</a>
+  <a href="#s5-rd"      class="nav-link">Section 5 — Recursive Descent</a>
+  <a href="#s6-print"   class="nav-link">Section 6 — Pretty Printer</a>
+  <a href="#s7-repl"    class="nav-link">Section 7 — REPL main()</a>
+  <div class="nav-group-label">Extending VEX</div>
+  <a href="#extend"     class="nav-link">Adding Functions & Constants</a>
+  <a href="#examples"   class="nav-link">Full Examples</a>
+</nav>
+
+<main class="main">
+
+  <div class="hero">
+    <div class="hero-eyebrow">Complete Beginner Guide</div>
+    <h1>VEX — <em>Math Scripting</em><br>Language in C</h1>
+    <p class="hero-desc">
+      A fully working math calculator language written in C, built by students
+      of Pulchowk Campus. This guide walks through every single line of the
+      source code — what it does, why it exists, and how it all connects.
+    </p>
+    <div class="hero-tags">
+      <span class="tag green">C Language</span>
+      <span class="tag blue">REPL</span>
+      <span class="tag orange">Recursive Descent Parser</span>
+      <span class="tag">BODMAS Enforced</span>
+      <span class="tag">~400 lines</span>
+    </div>
+  </div>
+
+  <section id="overview">
+    <div class="section-num">01 — Introduction</div>
+    <h2>What is VEX?</h2>
+    <p>VEX is a <strong>tiny programming language</strong> that lives entirely inside one C file. You type a math expression like <code>sin(pi/2) + 3^2</code> and it instantly evaluates it and prints the answer. It is not a library — it is its own interactive environment.</p>
+    <p>Think of it like a smart scientific calculator where you can also <strong>store variables</strong>, call <strong>functions</strong>, and chain calculations together using <code>ans</code> (the last result). Everything you type is evaluated line-by-line, which is called a <strong>REPL</strong> (Read–Eval–Print Loop).</p>
+    <div class="callout tip">
+      <div class="callout-label">💡 Big Picture</div>
+      <p>The entire program is one <code>.c</code> file with 7 clearly labeled sections. Each section handles one job, and they all talk to each other through simple function calls.</p>
+    </div>
+    <h3>What can VEX do?</h3>
+    <table>
+      <tr><th>Feature</th><th>Example</th><th>Result</th></tr>
+      <tr><td>Basic arithmetic</td><td><code>3 + 4 * 2</code></td><td><code>= 11</code></td></tr>
+      <tr><td>Power/exponent</td><td><code>2^10</code></td><td><code>= 1024</code></td></tr>
+      <tr><td>Built-in functions</td><td><code>sqrt(144)</code></td><td><code>= 12</code></td></tr>
+      <tr><td>Constants</td><td><code>pi * 2</code></td><td><code>= 6.28319</code></td></tr>
+      <tr><td>Variables</td><td><code>x = 5 * 3</code></td><td><code>= 15</code> (stored as x)</td></tr>
+      <tr><td>Chaining with ans</td><td><code>ans + 1</code></td><td><code>= 16</code></td></tr>
+      <tr><td>Degree trig</td><td><code>sind(90)</code></td><td><code>= 1</code></td></tr>
+      <tr><td>Factorial</td><td><code>fact(6)</code></td><td><code>= 720</code></td></tr>
+    </table>
+  </section>
+
+  <section id="howtorun">
+    <div class="section-num">02 — Setup</div>
+    <h2>How to Compile & Run</h2>
+    <p>Since VEX uses <code>&lt;math.h&gt;</code>, you need to link the math library with <code>-lm</code>.</p>
+    <pre><code><span class="c-comment"># Compile</span>
+gcc vex.c -o vex -lm
+
+<span class="c-comment"># Run it</span>
+./vex</code></pre>
+    <p>After running, you'll see the welcome message and the <code>Vex&gt;</code> prompt. Type any math expression and press Enter.</p>
+    <div class="repl">
+      <div class="repl-header"><div class="repl-dot r"></div><div class="repl-dot y"></div><div class="repl-dot g"></div> Terminal — vex</div>
+      <div class="repl-body">
+        <div class="repl-line" style="color:var(--text-dim)">Vex Version 0.2.0</div>
+        <div class="repl-line" style="color:var(--text-dim)">Commands: vars | funcs | consts | clear | exit</div>
+        <div class="repl-line">&nbsp;</div>
+        <div class="repl-line"><span class="repl-prompt">Vex&gt;</span> <span class="repl-input">x = 3 * pi</span></div>
+        <div class="repl-output">= 9.42478</div>
+        <div class="repl-line"><span class="repl-prompt">Vex&gt;</span> <span class="repl-input">sin(x) + ans</span></div>
+        <div class="repl-output">= 9.42478</div>
+        <div class="repl-line"><span class="repl-prompt">Vex&gt;</span> <span class="repl-input">exit</span></div>
+        <div class="repl-line" style="color:var(--text-dim)">Bye!</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="repl">
+    <div class="section-num">03 — Core Concepts</div>
+    <h2>The REPL — Read, Eval, Print, Loop</h2>
+    <p>REPL stands for <strong>Read–Eval–Print Loop</strong>. It is the heart of VEX. The program sits in an infinite <code>while(1)</code> loop doing four things forever:</p>
+    <div class="flow">
+      <div class="flow-box">1. READ</div><div class="flow-arrow">→</div>
+      <div class="flow-box orange">2. EVAL</div><div class="flow-arrow">→</div>
+      <div class="flow-box blue">3. PRINT</div><div class="flow-arrow">→</div>
+      <div class="flow-box dim">4. LOOP ↺</div>
+    </div>
+    <table>
+      <tr><th>Step</th><th>What happens</th><th>Code responsible</th></tr>
+      <tr><td>READ</td><td>Wait for the user to type a line and press Enter</td><td><code>fgets(line, …, stdin)</code></td></tr>
+      <tr><td>EVAL</td><td>Parse and compute the math expression</td><td><code>eval_expr(line)</code></td></tr>
+      <tr><td>PRINT</td><td>Show the result nicely</td><td><code>print_result(res)</code></td></tr>
+      <tr><td>LOOP</td><td>Go back and wait for the next line</td><td><code>while(1)</code></td></tr>
+    </table>
+    <h3>Special REPL Commands</h3>
+    <table>
+      <tr><th>Command</th><th>What it does</th></tr>
+      <tr><td>vars</td><td>Lists every stored variable and its value</td></tr>
+      <tr><td>funcs</td><td>Lists all built-in functions like sin, cos, sqrt…</td></tr>
+      <tr><td>consts</td><td>Lists all built-in constants like pi, e, tau…</td></tr>
+      <tr><td>clear</td><td>Deletes all variables (keeps ans)</td></tr>
+      <tr><td>exit / quit</td><td>Exits the program</td></tr>
+    </table>
+  </section>
+
+  <section id="variables">
+    <h2>Variables & <code>ans</code></h2>
+    <p>You can store any result in a named variable using <code>=</code>.</p>
+    <div class="repl">
+      <div class="repl-header"><div class="repl-dot r"></div><div class="repl-dot y"></div><div class="repl-dot g"></div> Variable examples</div>
+      <div class="repl-body">
+        <div class="repl-line"><span class="repl-prompt">Vex&gt;</span> <span class="repl-input">radius = 7</span></div>
+        <div class="repl-output">= 7</div>
+        <div class="repl-line"><span class="repl-prompt">Vex&gt;</span> <span class="repl-input">area = pi * radius^2</span></div>
+        <div class="repl-output">= 153.938</div>
+        <div class="repl-line"><span class="repl-prompt">Vex&gt;</span> <span class="repl-input">ans * 2</span></div>
+        <div class="repl-output">= 307.876</div>
+      </div>
+    </div>
+    <div class="callout note">
+      <div class="callout-label">📌 Note — ans</div>
+      <p><code>ans</code> is automatically updated after every expression via <code>var_set("ans", res)</code>.</p>
+    </div>
+  </section>
+
+  <section id="operators">
+    <h2>Operators & BODMAS Precedence</h2>
+    <table>
+      <tr><th>Operator</th><th>Meaning</th><th>Precedence</th><th>Associativity</th></tr>
+      <tr><td>( )</td><td>Brackets / grouping</td><td>Highest</td><td>—</td></tr>
+      <tr><td>^</td><td>Exponent / power</td><td>2nd</td><td>Right → Left</td></tr>
+      <tr><td>* / %</td><td>Multiply, divide, modulo</td><td>3rd</td><td>Left → Right</td></tr>
+      <tr><td>+ -</td><td>Addition, subtraction</td><td>Lowest</td><td>Left → Right</td></tr>
+    </table>
+    <div class="callout warn">
+      <div class="callout-label">⚠️ Right-Associative Power</div>
+      <p><code>2^3^2</code> = <code>2^(3^2) = 512</code>, not <code>(2^3)^2 = 64</code>.</p>
+    </div>
+  </section>
+
+  <section id="constants">
+    <h2>Built-in Constants</h2>
+    <table>
+      <tr><th>Name</th><th>Value</th><th>What it is</th></tr>
+      <tr><td>pi</td><td>3.14159265358979…</td><td>Ratio of circle circumference to diameter</td></tr>
+      <tr><td>e</td><td>2.71828182845904…</td><td>Euler's number</td></tr>
+      <tr><td>tau</td><td>6.28318530717958…</td><td>2π — full turn in radians</td></tr>
+      <tr><td>phi</td><td>1.61803398874989…</td><td>Golden ratio</td></tr>
+      <tr><td>inf</td><td>+∞</td><td>Positive infinity</td></tr>
+    </table>
+  </section>
+
+  <section id="functions">
+    <h2>Built-in Functions</h2>
+    <h4>Trigonometry (radians)</h4>
+    <table>
+      <tr><th>Function</th><th>Description</th><th>Example</th></tr>
+      <tr><td>sin(x)</td><td>Sine of x radians</td><td><code>sin(pi/2)</code> → 1</td></tr>
+      <tr><td>cos(x)</td><td>Cosine of x radians</td><td><code>cos(0)</code> → 1</td></tr>
+      <tr><td>tan(x)</td><td>Tangent of x radians</td><td><code>tan(pi/4)</code> → 1</td></tr>
+      <tr><td>asin(x)</td><td>Inverse sine</td><td><code>asin(1)</code> → 1.5708</td></tr>
+      <tr><td>acos(x)</td><td>Inverse cosine</td><td><code>acos(0)</code> → 1.5708</td></tr>
+      <tr><td>atan(x)</td><td>Inverse tangent</td><td><code>atan(1)</code> → 0.7854</td></tr>
+      <tr><td>sinh / cosh / tanh</td><td>Hyperbolic trig</td><td></td></tr>
+    </table>
+    <h4>Trigonometry (degrees)</h4>
+    <table>
+      <tr><th>Function</th><th>Example</th></tr>
+      <tr><td>sind(x)</td><td><code>sind(90)</code> → 1</td></tr>
+      <tr><td>cosd(x)</td><td><code>cosd(60)</code> → 0.5</td></tr>
+      <tr><td>tand(x)</td><td><code>tand(45)</code> → 1</td></tr>
+    </table>
+    <h4>Logarithm & Exponential</h4>
+    <table>
+      <tr><th>Function</th><th>Description</th></tr>
+      <tr><td>exp(x)</td><td>eˣ</td></tr>
+      <tr><td>ln(x)</td><td>Natural log (base e)</td></tr>
+      <tr><td>log(x)</td><td>Log base 10</td></tr>
+      <tr><td>log2(x)</td><td>Log base 2</td></tr>
+    </table>
+    <h4>Roots, Rounding & Misc</h4>
+    <table>
+      <tr><th>Function</th><th>Description</th><th>Example</th></tr>
+      <tr><td>sqrt(x)</td><td>Square root</td><td><code>sqrt(81)</code> → 9</td></tr>
+      <tr><td>cbrt(x)</td><td>Cube root</td><td><code>cbrt(27)</code> → 3</td></tr>
+      <tr><td>abs(x)</td><td>Absolute value</td><td><code>abs(-7)</code> → 7</td></tr>
+      <tr><td>ceil / floor / round</td><td>Rounding</td><td></td></tr>
+      <tr><td>fact(n)</td><td>Factorial</td><td><code>fact(5)</code> → 120</td></tr>
+      <tr><td>sign(x)</td><td>−1, 0, or +1</td><td><code>sign(-9)</code> → -1</td></tr>
+      <tr><td>recip(x)</td><td>1/x</td><td><code>recip(4)</code> → 0.25</td></tr>
+      <tr><td>deg(x)</td><td>Radians → degrees</td><td><code>deg(pi)</code> → 180</td></tr>
+      <tr><td>rad(x)</td><td>Degrees → radians</td><td><code>rad(180)</code> → 3.14159</td></tr>
+    </table>
+  </section>
+
+  <hr class="divider">
+
+  <section id="s1-consts">
+    <div class="section-num">Section 1 — Source Code</div>
+    <h2>Constants Table</h2>
+    <pre><code><span class="c-keyword">typedef struct</span> { <span class="c-keyword">const char</span> *name; <span class="c-keyword">double</span> value; } <span class="c-type">ConstEntry</span>;
+
+<span class="c-keyword">static const</span> <span class="c-type">ConstEntry</span> CONSTS[] = {
+    { <span class="c-str">"pi"</span>,   M_PI             },
+    { <span class="c-str">"e"</span>,    M_E              },
+    { <span class="c-str">"tau"</span>,  2.0 * M_PI      },
+    { <span class="c-str">"phi"</span>,  1.61803398874989 },
+    { <span class="c-str">"inf"</span>,  HUGE_VAL         },
+    { <span class="c-str">NULL</span>,   0                }   <span class="c-comment">/* sentinel */</span>
+};</code></pre>
+    <div class="callout tip"><div class="callout-label">💡 Sentinel Pattern</div><p>The last entry <code>{ NULL, 0 }</code> marks the end. The parser loops and stops when it sees <code>name == NULL</code>.</p></div>
+  </section>
+
+  <section id="s2-funcs">
+    <div class="section-num">Section 2 — Source Code</div>
+    <h2>Functions Table</h2>
+    <pre><code><span class="c-keyword">typedef double</span> (*<span class="c-type">MathFn</span>)(<span class="c-keyword">double</span>);
+<span class="c-keyword">typedef struct</span> { <span class="c-keyword">const char</span> *name; <span class="c-type">MathFn</span> fn; } <span class="c-type">FuncEntry</span>;
+
+<span class="c-keyword">static const</span> <span class="c-type">FuncEntry</span> FUNCS[] = {
+    { <span class="c-str">"sin"</span>,   sin        },
+    { <span class="c-str">"sqrt"</span>,  sqrt       },
+    { <span class="c-str">"fact"</span>,  fn_fact    },
+    <span class="c-comment">/* ... */</span>
+    { <span class="c-str">NULL</span>,    NULL       }
+};</code></pre>
+    <div class="callout tip"><div class="callout-label">💡 Table-Driven Design</div><p>Adding a new function is one line. No parser changes needed.</p></div>
+    <pre><code><span class="c-keyword">static double</span> <span class="c-fn">fn_sind</span>(<span class="c-keyword">double</span> d)  { <span class="c-keyword">return</span> sin(d * M_PI / 180.0); }
+<span class="c-keyword">static double</span> <span class="c-fn">fn_fact</span>(<span class="c-keyword">double</span> n) {
+    <span class="c-keyword">if</span> (n &lt; 0 || n != floor(n)) <span class="c-keyword">return</span> NAN;
+    <span class="c-keyword">long long</span> r = 1;
+    <span class="c-keyword">for</span> (<span class="c-keyword">long long</span> i = 2; i &lt;= (<span class="c-keyword">long long</span>)n; i++) r *= i;
+    <span class="c-keyword">return</span> (<span class="c-keyword">double</span>)r;
+}
+<span class="c-keyword">static double</span> <span class="c-fn">fn_sign</span>(<span class="c-keyword">double</span> x)  { <span class="c-keyword">return</span> (x &gt; 0) - (x &lt; 0); }</code></pre>
+  </section>
+
+  <section id="s3-vars">
+    <div class="section-num">Section 3 — Source Code</div>
+    <h2>Variable Store</h2>
+    <pre><code><span class="c-macro">#define MAX_VARS     256</span>
+<span class="c-macro">#define VAR_NAME_MAX  64</span>
+
+<span class="c-keyword">typedef struct</span> { <span class="c-keyword">char</span> name[VAR_NAME_MAX]; <span class="c-keyword">double</span> value; } <span class="c-type">Var</span>;
+<span class="c-keyword">static</span> <span class="c-type">Var</span>   var_store[MAX_VARS];
+<span class="c-keyword">static int</span>   var_count = 0;</code></pre>
+    <div class="grid-2">
+      <div class="grid-card"><div class="grid-card-title">var_find(name)</div><p>Linear scan through stored vars, returns pointer to value or NULL.</p></div>
+      <div class="grid-card"><div class="grid-card-title">var_set(name, value)</div><p>Updates if found, appends if new. Errors if 256 var limit reached.</p></div>
+    </div>
+  </section>
+
+  <section id="s4-parse">
+    <div class="section-num">Section 4 — Source Code</div>
+    <h2>Parser Utilities</h2>
+    <pre><code><span class="c-keyword">static void</span> <span class="c-fn">skip_spaces</span>(<span class="c-keyword">const char</span> **s) {
+    <span class="c-keyword">while</span> (**s &amp;&amp; isspace((<span class="c-keyword">unsigned char</span>)**s)) (*s)++;
+}</code></pre>
+    <p>Advances past whitespace — called constantly so <code>3  +  4</code> works like <code>3+4</code>.</p>
+    <pre><code><span class="c-keyword">static char</span> *<span class="c-fn">extract_parens</span>(<span class="c-keyword">const char</span> **p) {
+    <span class="c-keyword">int</span> depth = 1;
+    <span class="c-keyword">while</span> (**p &amp;&amp; depth &gt; 0) {
+        <span class="c-keyword">if</span>      (**p == <span class="c-str">'('</span>) depth++;
+        <span class="c-keyword">else if</span> (**p == <span class="c-str">')'</span>) depth--;
+        (*p)++;
+    }
+    <span class="c-comment">/* ... malloc, copy, return */</span>
+}</code></pre>
+    <div class="callout warn"><div class="callout-label">⚠️ Memory</div><p>Always paired with <code>free(inner)</code> after evaluation.</p></div>
+  </section>
+
+  <section id="s5-rd">
+    <div class="section-num">Section 5 — Source Code</div>
+    <h2>Recursive Descent Parser</h2>
+    <div class="flow" style="flex-direction:column; align-items:flex-start; gap:6px;">
+      <div style="display:flex; align-items:center; gap:8px;"><div class="flow-box blue">eval_expr</div><span style="color:var(--muted); font-size:12px; font-family:'DM Mono',monospace;">assignment ( x = … )</span></div>
+      <div style="padding-left:20px; color:var(--muted);">↓</div>
+      <div style="display:flex; align-items:center; gap:8px; padding-left:20px;"><div class="flow-box">parse_expr</div><span style="color:var(--muted); font-size:12px; font-family:'DM Mono',monospace;">+  −</span></div>
+      <div style="padding-left:40px; color:var(--muted);">↓</div>
+      <div style="display:flex; align-items:center; gap:8px; padding-left:40px;"><div class="flow-box orange">parse_term</div><span style="color:var(--muted); font-size:12px; font-family:'DM Mono',monospace;">*  /  %</span></div>
+      <div style="padding-left:60px; color:var(--muted);">↓</div>
+      <div style="display:flex; align-items:center; gap:8px; padding-left:60px;"><div class="flow-box">parse_power</div><span style="color:var(--muted); font-size:12px; font-family:'DM Mono',monospace;">^  (right-assoc)</span></div>
+      <div style="padding-left:80px; color:var(--muted);">↓</div>
+      <div style="display:flex; align-items:center; gap:8px; padding-left:80px;"><div class="flow-box blue">parse_atom</div><span style="color:var(--muted); font-size:12px; font-family:'DM Mono',monospace;">numbers, names, parens</span></div>
+    </div>
+    <h3>parse_power — right-associativity</h3>
+    <pre><code><span class="c-keyword">static double</span> <span class="c-fn">parse_power</span>(<span class="c-keyword">const char</span> **p) {
+    <span class="c-keyword">double</span> base = parse_atom(p);
+    <span class="c-keyword">if</span> (**p == <span class="c-str">'^'</span>) {
+        (*p)++;
+        <span class="c-keyword">double</span> exp_val = parse_power(p);   <span class="c-comment">/* recursive = right-assoc */</span>
+        <span class="c-keyword">return</span> pow(base, exp_val);
+    }
+    <span class="c-keyword">return</span> base;
+}</code></pre>
+  </section>
+
+  <section id="s6-print">
+    <div class="section-num">Section 6 — Source Code</div>
+    <h2>Pretty Printer</h2>
+    <pre><code><span class="c-keyword">static void</span> <span class="c-fn">print_result</span>(<span class="c-keyword">double</span> r) {
+    <span class="c-keyword">if</span> (isnan(r))  { puts(<span class="c-str">"= NaN (not a number)"</span>); <span class="c-keyword">return</span>; }
+    <span class="c-keyword">if</span> (isinf(r))  { puts(r &gt; 0 ? <span class="c-str">"= +Infinity"</span> : <span class="c-str">"= -Infinity"</span>); <span class="c-keyword">return</span>; }
+    <span class="c-keyword">if</span> (r == (<span class="c-keyword">long long</span>)r &amp;&amp; fabs(r) &lt; 1e15)
+                   printf(<span class="c-str">"= %lld\n"</span>, (<span class="c-keyword">long long</span>)r);
+    <span class="c-keyword">else</span>           printf(<span class="c-str">"= %g\n"</span>, r);
+}</code></pre>
+  </section>
+
+  <section id="s7-repl">
+    <div class="section-num">Section 7 — Source Code</div>
+    <h2>The REPL — <code>main()</code></h2>
+    <pre><code><span class="c-keyword">int</span> <span class="c-fn">main</span>(<span class="c-keyword">void</span>) {
+    var_set(<span class="c-str">"ans"</span>, 0.0);
+    <span class="c-keyword">while</span> (1) {
+        fputs(<span class="c-str">"Vex&gt; "</span>, stdout);
+        fflush(stdout);
+        <span class="c-keyword">if</span> (!fgets(line, INPUT_MAX, stdin)) <span class="c-keyword">break</span>;
+        <span class="c-comment">/* strip trailing whitespace, check commands */</span>
+        <span class="c-keyword">double</span> res = eval_expr(line);
+        var_set(<span class="c-str">"ans"</span>, res);
+        print_result(res);
+    }
+}</code></pre>
+  </section>
+
+  <hr class="divider">
+
+  <section id="extend">
+    <div class="section-num">How to Extend</div>
+    <h2>Adding Your Own Functions & Constants</h2>
+    <pre><code><span class="c-comment">/* 1. Write your function */</span>
+<span class="c-keyword">static double</span> <span class="c-fn">fn_sinc</span>(<span class="c-keyword">double</span> x) {
+    <span class="c-keyword">return</span> (x == 0.0) ? 1.0 : sin(x) / x;
+}
+
+<span class="c-comment">/* 2. Add one line to FUNCS[] */</span>
+{ <span class="c-str">"sinc"</span>, fn_sinc },
+
+<span class="c-comment">/* 3. Add constants to CONSTS[] */</span>
+{ <span class="c-str">"g"</span>, 9.80665 },   <span class="c-comment">/* gravity m/s² */</span>
+{ <span class="c-str">"c"</span>, 299792458 },  <span class="c-comment">/* speed of light m/s */</span></code></pre>
+    <div class="callout tip"><div class="callout-label">💡 Zero parser changes</div><p>Both tables are scanned at runtime — new entries work automatically.</p></div>
+  </section>
+
+  <section id="examples">
+    <div class="section-num">Examples</div>
+    <h2>Full Session Examples</h2>
+
+    <h3>Finance: Compound interest</h3>
+    <p>Rajan deposits <strong>Rs. 45,000</strong> at <strong>8% p.a. compounded quarterly</strong> for 3 years. He then reinvests the full amount plus a <strong>Rs. 5,000 bonus</strong> at <strong>10% p.a. compounded monthly</strong> for 2 more years. VEX chains the two phases using <code>ans</code>, carrying full double precision throughout — no rounding errors from intermediate steps.</p>
+    <div class="repl">
+      <div class="repl-header"><div class="repl-dot r"></div><div class="repl-dot y"></div><div class="repl-dot g"></div> Compound interest — two-phase investment</div>
+      <div class="repl-body">
+        <div class="repl-comment">── Phase 1: Himalayan Bank — 8% p.a., quarterly, 3 years ──</div>
+        <div class="repl-line"><span class="repl-prompt">Vex&gt;</span> <span class="repl-input">P1 = 45000</span></div>
+        <div class="repl-output">= 45000</div>
+        <div class="repl-line"><span class="repl-prompt">Vex&gt;</span> <span class="repl-input">r1 = 0.08</span></div>
+        <div class="repl-output">= 0.08</div>
+        <div class="repl-line"><span class="repl-prompt">Vex&gt;</span> <span class="repl-input">n1 = 4</span></div>
+        <div class="repl-output">= 4</div>
+        <div class="repl-line"><span class="repl-prompt">Vex&gt;</span> <span class="repl-input">t1 = 3</span></div>
+        <div class="repl-output">= 3</div>
+        <div class="repl-line"><span class="repl-prompt">Vex&gt;</span> <span class="repl-input">ans = P1*(1 + r1/n1)^(n1*t1)</span></div>
+        <div class="repl-output">= 57070.9</div>
+        <div class="repl-comment">→ A = P(1 + r/n)^(nt)  —  amount after phase 1</div>
+        <div class="repl-line" style="margin-top:8px"><span class="repl-prompt">Vex&gt;</span> <span class="repl-input">ans = ans + 5000</span></div>
+        <div class="repl-output">= 62070.9</div>
+        <div class="repl-comment">→ add Rs. 5,000 employer bonus before reinvesting</div>
+        <div class="repl-comment">── Phase 2: Nepal Investment Bank — 10% p.a., monthly, 2 years ──</div>
+        <div class="repl-line" style="margin-top:8px"><span class="repl-prompt">Vex&gt;</span> <span class="repl-input">ans = ans*(1 + 0.10/12)^(12*2)</span></div>
+        <div class="repl-output">= 75750.7</div>
+        <div class="repl-comment">→ final amount after full 5-year journey</div>
+      </div>
+    </div>
+    <div class="callout note">
+      <div class="callout-label">📌 Precision note</div>
+      <p>VEX carries full IEEE 754 double precision through every step. Manual calculations that round <code>(1.02)^12</code> to 4 decimal places introduce a ~Rs. 57 drift by the end. Always let VEX hold the full value and only round the final answer.</p>
+    </div>
+
+    <h3>Physics: Projectile motion</h3>
+    <div class="repl">
+      <div class="repl-header"><div class="repl-dot r"></div><div class="repl-dot y"></div><div class="repl-dot g"></div> Projectile motion</div>
+      <div class="repl-body">
+        <div class="repl-line"><span class="repl-prompt">Vex&gt;</span> <span class="repl-input">v0 = 20</span></div><div class="repl-output">= 20</div>
+        <div class="repl-line"><span class="repl-prompt">Vex&gt;</span> <span class="repl-input">angle = rad(45)</span></div><div class="repl-output">= 0.785398</div>
+        <div class="repl-line"><span class="repl-prompt">Vex&gt;</span> <span class="repl-input">g = 9.8</span></div><div class="repl-output">= 9.8</div>
+        <div class="repl-line"><span class="repl-prompt">Vex&gt;</span> <span class="repl-input">range = v0^2 * sin(2*angle) / g</span></div><div class="repl-output">= 40.8163</div>
+        <div class="repl-comment">→ horizontal range in metres</div>
+      </div>
+    </div>
+
+    <h3>Error handling</h3>
+    <div class="repl">
+      <div class="repl-header"><div class="repl-dot r"></div><div class="repl-dot y"></div><div class="repl-dot g"></div> Edge cases</div>
+      <div class="repl-body">
+        <div class="repl-line"><span class="repl-prompt">Vex&gt;</span> <span class="repl-input">1 / 0</span></div>
+        <div class="repl-output" style="color:var(--red);">Error: division by zero</div>
+        <div class="repl-line"><span class="repl-prompt">Vex&gt;</span> <span class="repl-input">sqrt(-1)</span></div>
+        <div class="repl-output">= NaN (not a number)</div>
+        <div class="repl-line"><span class="repl-prompt">Vex&gt;</span> <span class="repl-input">2^3^2</span></div>
+        <div class="repl-output">= 512</div>
+        <div class="repl-comment">→ 2^(3^2) = 512, right-associative</div>
+      </div>
+    </div>
+  </section>
+
+  <footer>VEX v0.2.0 · Pulchowk Campus · Guide for Apil</footer>
+</main>
+
+<div id="toast"></div>
+
+<script>
+function triggerDownload(href, filename) {
+  const a = document.createElement("a");
+  a.href = href; a.download = filename;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+}
+
+function showToast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 2400);
+}
+
+function downloadSource() {
+  triggerDownload("VexMain.c", "VexMain.c");
+  showToast("↓ VexMain.c downloading…");
+}
+
+function downloadBuildInfo() {
+  const txt = `VEX v0.2.0 — Build Instructions
+================================
+
+COMPILE (Linux / macOS)
+  gcc vex.c -o vex -lm
+  ./vex
+
+COMPILE (Windows — MinGW)
+  gcc vex.c -o vex.exe -lm
+  vex.exe
+
+COMPILE (Windows — MSVC)
+  cl vex.c /Fe:vex.exe /link /DEFAULTLIB:msvcrt
+
+REQUIREMENTS
+  - GCC 7+ or Clang 6+ or MSVC 2019+
+  - Standard C library + math library (-lm)
+  - No external dependencies
+
+QUICK TEST
+  Vex> 2^10
+  = 1024
+  Vex> sin(pi/2)
+  = 1
+  Vex> fact(10)
+  = 3628800
+
+Source: vex.c (download separately via the Source Code button)
+Guide:  VEX v0.2.0 Complete Guide (this HTML file)
+Built at Pulchowk Campus.
+`;
+  const blob = new Blob([txt], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+  triggerDownload(url, "vex-build-instructions.txt");
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  showToast("↓ Build guide downloaded");
+}
+
+function downloadGuide() {
+  const html = document.documentElement.outerHTML;
+  const blob = new Blob([html], { type: "text/html" });
+  const url = URL.createObjectURL(blob);
+  triggerDownload(url, "vex-guide.html");
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  showToast("↓ Guide saved as HTML");
+}
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      document.querySelectorAll(".nav-link").forEach(l => l.classList.remove("active"));
+      const a = document.querySelector(`.nav-link[href="#${e.target.id}"]`);
+      if (a) a.classList.add("active");
+    }
+  });
+}, { threshold: 0.2 });
+document.querySelectorAll("section[id]").forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
