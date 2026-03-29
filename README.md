@@ -1,5 +1,5 @@
 <div align="center">
-  <h1>🚀 Vex</h1>
+  <h1> Vex</h1>
   <p><strong>A simple, interactive Math Scripting Language built in C by Students of Pulchowk.</strong></p>
 </div>
 
@@ -9,7 +9,7 @@
 
 **Vex** is an easy-to-use, interactive command-line math evaluator and scripting language. It allows you to perform complex mathematical operations, define custom variables, and utilize a wide array of built-in constants and functions instantly from your terminal!
 
-## ✨ Features
+##  Features
 
 - **Interactive REPL**: A responsive loop (`Vex> `) that instantly evaluates math expressions.
 - **Variables**: Assign results to variables (e.g., `x = 5 * pi`) and use the implicit `ans` variable which always holds your last result.
@@ -19,7 +19,7 @@
 
 ---
 
-## 🛠️ Quick Start
+##  Quick Start
 
 ### 1. Compilation
 You'll need a C compiler (`gcc` or `clang`) installed on your system. 
@@ -38,7 +38,7 @@ Run the compiled executable to start the Vex REPL:
 
 ---
 
-## 💻 Usage & Syntax
+##  Usage & Syntax
 
 Once inside Vex, you can type expressions exactly as you would write them mathematically.
 
@@ -62,7 +62,7 @@ Vex> area = pi * radius^2
 
 ---
 
-## 📚 Built-in Reference
+##  Built-in Reference
 
 ### **Mathematical Functions**
 Use any of these within your expressions (e.g., `sin(pi/2)` or `fact(5)`):
