@@ -256,6 +256,7 @@
   .callout.key  .callout-label { color: var(--accent3); }
   .callout p { margin: 0; }
 
+  /* ── Unified table styles ── */
   table { width: 100%; border-collapse: collapse; margin: 18px 0; font-size: 13.5px; }
   th {
     font-family: 'DM Mono', monospace;
@@ -271,6 +272,18 @@
   td { padding: 10px 14px; border-bottom: 1px solid rgba(35,40,35,0.5); color: var(--text-dim); vertical-align: top; }
   td:first-child { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--accent); }
   tr:last-child td { border-bottom: none; }
+
+  /* lib-table group rows — override first-child accent color for group labels */
+  .lib-table tr.group td {
+    color: var(--text);
+    font-weight: 500;
+    background: rgba(168,255,120,0.04);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+  }
 
   .flow { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; padding: 20px; background: var(--code-bg); border: 1px solid var(--border); border-radius: 6px; margin: 18px 0; font-family: 'DM Mono', monospace; font-size: 12px; }
   .flow-box { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 6px 12px; color: var(--accent); white-space: nowrap; }
@@ -402,6 +415,8 @@
   <div class="nav-group-label">Extending VEX</div>
   <a href="#extend"     class="nav-link">Adding Functions & Constants</a>
   <a href="#examples"   class="nav-link">Full Examples</a>
+  <div class="nav-group-label">Appendix</div>
+  <a href="#libraries"  class="nav-link">Standard Libraries</a>
 </nav>
 
 <main class="main">
@@ -802,8 +817,73 @@ gcc vex.c -o vex -lm
     </div>
   </section>
 
+  <hr class="divider">
+
+  <!-- ── Libraries appendix — now inside <main> so it gets sidebar offset ── -->
+  <section id="libraries">
+    <div class="section-num">Appendix — Libraries</div>
+    <h2>Standard Library Functions Used</h2>
+    <p>VEX relies on several C standard libraries for parsing, math computation, string handling, and file operations.</p>
+
+    <table class="lib-table">
+      <thead>
+        <tr>
+          <th>Library</th>
+          <th>Function</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="group"><td colspan="3">&lt;stdio.h&gt;</td></tr>
+        <tr><td>stdio.h</td><td>printf</td><td>Print formatted output</td></tr>
+        <tr><td>stdio.h</td><td>fprintf</td><td>Print error messages</td></tr>
+        <tr><td>stdio.h</td><td>puts</td><td>Print string with newline</td></tr>
+        <tr><td>stdio.h</td><td>fgets</td><td>Read user input</td></tr>
+        <tr><td>stdio.h</td><td>fscanf</td><td>Read from file</td></tr>
+        <tr><td>stdio.h</td><td>fopen</td><td>Open file</td></tr>
+        <tr><td>stdio.h</td><td>fclose</td><td>Close file</td></tr>
+
+        <tr class="group"><td colspan="3">&lt;stdlib.h&gt;</td></tr>
+        <tr><td>stdlib.h</td><td>malloc</td><td>Allocate memory</td></tr>
+        <tr><td>stdlib.h</td><td>free</td><td>Free memory</td></tr>
+        <tr><td>stdlib.h</td><td>exit</td><td>Terminate program</td></tr>
+        <tr><td>stdlib.h</td><td>strtod</td><td>String to double conversion</td></tr>
+
+        <tr class="group"><td colspan="3">&lt;ctype.h&gt;</td></tr>
+        <tr><td>ctype.h</td><td>isspace</td><td>Check whitespace</td></tr>
+        <tr><td>ctype.h</td><td>isalpha</td><td>Check alphabetic</td></tr>
+        <tr><td>ctype.h</td><td>isalnum</td><td>Check alphanumeric</td></tr>
+
+        <tr class="group"><td colspan="3">&lt;string.h&gt;</td></tr>
+        <tr><td>string.h</td><td>strcmp</td><td>Compare strings</td></tr>
+        <tr><td>string.h</td><td>strlen</td><td>String length</td></tr>
+        <tr><td>string.h</td><td>strncpy</td><td>Copy string safely</td></tr>
+
+        <tr class="group"><td colspan="3">&lt;math.h&gt;</td></tr>
+        <tr><td>math.h</td><td>sin</td><td>Sine function</td></tr>
+        <tr><td>math.h</td><td>cos</td><td>Cosine function</td></tr>
+        <tr><td>math.h</td><td>tan</td><td>Tangent function</td></tr>
+        <tr><td>math.h</td><td>asin</td><td>Inverse sine</td></tr>
+        <tr><td>math.h</td><td>acos</td><td>Inverse cosine</td></tr>
+        <tr><td>math.h</td><td>atan</td><td>Inverse tangent</td></tr>
+        <tr><td>math.h</td><td>sqrt</td><td>Square root</td></tr>
+        <tr><td>math.h</td><td>pow</td><td>Power function</td></tr>
+        <tr><td>math.h</td><td>log</td><td>Natural logarithm</td></tr>
+        <tr><td>math.h</td><td>log10</td><td>Base-10 logarithm</td></tr>
+        <tr><td>math.h</td><td>exp</td><td>Exponential</td></tr>
+        <tr><td>math.h</td><td>ceil</td><td>Round up</td></tr>
+        <tr><td>math.h</td><td>floor</td><td>Round down</td></tr>
+        <tr><td>math.h</td><td>round</td><td>Round nearest</td></tr>
+        <tr><td>math.h</td><td>fabs</td><td>Absolute value</td></tr>
+        <tr><td>math.h</td><td>isnan</td><td>Check NaN</td></tr>
+        <tr><td>math.h</td><td>isinf</td><td>Check infinity</td></tr>
+      </tbody>
+    </table>
+  </section>
+
   <footer>VEX v0.2.0 · Pulchowk Campus · Guide for Apil</footer>
-</main>
+
+</main><!-- end .main -->
 
 <div id="toast"></div>
 

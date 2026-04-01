@@ -1,0 +1,10 @@
+x = 10
+y = 20
+z = x + y
+area = pi * x^2
+angle = 45
+s = sind(angle)
+c = cosd(angle)
+t = tand(angle)
+result = s^2 + c^2
+final = result + ans

@@ -24,7 +24,7 @@ static double fnRad2Deg(double r) { return r * 180.0 / M_PI; }
 static double fnSind(double d)    { return sin(d * M_PI / 180.0); }
 static double fnCosd(double d)    { return cos(d * M_PI / 180.0); }
 static double fnTand(double d)    { return tan(d * M_PI / 180.0); }
-static double fnLog2(double x)   { return log(x) / log(2.0); }  
+static double fnLog2(double x)    { return log(x) / log(2.0); }
 static double fnFact(double n) {
     if (n < 0 || n != floor(n)) return NAN;
     long long r = 1;
@@ -44,34 +44,34 @@ static const FuncEntry funcs[] = {
     { "sinh",  sinh       },
     { "cosh",  cosh       },
     { "tanh",  tanh       },
-    { "sind",  fnSind    },
-    { "cosd",  fnCosd    },
-    { "tand",  fnTand    },
-    { "deg",   fnRad2Deg },
-    { "rad",   fnDeg2Rad },
+    { "sind",  fnSind     },
+    { "cosd",  fnCosd     },
+    { "tand",  fnTand     },
+    { "deg",   fnRad2Deg  },
+    { "rad",   fnDeg2Rad  },
     { "exp",   exp        },
     { "ln",    log        },
     { "log",   log10      },
-    { "log2",  fnLog2   },
+    { "log2",  fnLog2     },
     { "sqrt",  sqrt       },
     { "cbrt",  cbrt       },
     { "ceil",  ceil       },
     { "floor", floor      },
     { "round", round      },
     { "abs",   fabs       },
-    { "fact",  fnFact    },
-    { "sign",  fnSign    },
-    { "recip", fnRecip   },
+    { "fact",  fnFact     },
+    { "sign",  fnSign     },
+    { "recip", fnRecip    },
     { NULL,    NULL       }
 };
 
 
-#define maxVars     256
-#define varNameMax  64
+#define maxVars    256
+#define varNameMax 64
 
 typedef struct { char name[varNameMax]; double value; } Var;
-static Var   varStore[maxVars];
-static int   varCount = 0;
+static Var  varStore[maxVars];
+static int  varCount = 0;
 
 static double *varFind(const char *name) {
     for (int i = 0; i < varCount; i++)
@@ -83,10 +83,7 @@ static double *varFind(const char *name) {
 static void varSet(const char *name, double value) {
     double *slot = varFind(name);
     if (slot) { *slot = value; return; }
-    if (varCount >= maxVars) {
-        fputs("Error: variable table full\n", stderr);
-        return;
-    }
+    if (varCount >= maxVars) { fputs("Error: variable table full\n", stderr); return; }
     strncpy(varStore[varCount].name, name, varNameMax - 1);
     varStore[varCount].name[varNameMax - 1] = '\0';
     varStore[varCount].value = value;
@@ -117,9 +114,8 @@ static char *extractParens(const char **p) {
 }
 
 
-
-static double evalExpr(const char *input);   
-static double parseExpr(const char **p);     
+static double evalExpr(const char *input);
+static double parseExpr(const char **p);
 
 static double parseAtom(const char **p) {
     skipSpaces(p);
@@ -159,12 +155,10 @@ static double parseAtom(const char **p) {
             return v;
         }
 
-        
         for (int i = 0; consts[i].name; i++)
             if (strcmp(id, consts[i].name) == 0)
                 return consts[i].value;
 
-        
         double *slot = varFind(id);
         if (slot) return *slot;
 
@@ -172,7 +166,6 @@ static double parseAtom(const char **p) {
         return 0;
     }
 
-    
     char *end;
     double val = strtod(*p, &end);
     if (end == *p) {
@@ -189,7 +182,7 @@ static double parsePower(const char **p) {
     skipSpaces(p);
     if (**p == '^') {
         (*p)++;
-        double expVal = parsePower(p);   
+        double expVal = parsePower(p);
         return pow(base, expVal);
     }
     return base;
@@ -207,7 +200,7 @@ static double parseTerm(const char **p) {
         } else if (op == '/') {
             if (rhs == 0.0) { fputs("Error: division by zero\n", stderr); return 0; }
             result /= rhs;
-        } else {                          
+        } else {
             if (rhs == 0.0) { fputs("Error: modulo by zero\n", stderr); return 0; }
             result = fmod(result, rhs);
         }
@@ -234,7 +227,6 @@ static double evalExpr(const char *input) {
     const char *p = input;
     skipSpaces(&p);
 
-    
     if (isalpha((unsigned char)*p) || *p == '_') {
         const char *save = p;
         char id[varNameMax]; int len = 0;
@@ -243,12 +235,12 @@ static double evalExpr(const char *input) {
         id[len] = '\0';
         skipSpaces(&p);
         if (*p == '=') {
-            p++;   
+            p++;
             double val = parseExpr(&p);
             varSet(id, val);
             return val;
         }
-        p = save;   
+        p = save;
     }
 
     return parseExpr(&p);
@@ -256,11 +248,26 @@ static double evalExpr(const char *input) {
 
 
 static void printResult(double r) {
-    if (isnan(r))              { puts("= NaN (not a number)"); return; }
-    if (isinf(r))              { puts(r > 0 ? "= +Infinity" : "= -Infinity"); return; }
+    if (isnan(r))             { puts("= NaN (not a number)"); return; }
+    if (isinf(r))             { puts(r > 0 ? "= +Infinity" : "= -Infinity"); return; }
     if (r == (long long)r && fabs(r) < 1e15)
-                               printf("= %lld\n", (long long)r);
-    else                       printf("= %g\n", r);
+                              printf("= %lld\n", (long long)r);
+    else                      printf("= %g\n", r);
+}
+
+
+static void runFile(const char *filename) {
+    FILE *f = fopen(filename, "r");
+    if (!f) { fprintf(stderr, "Error: cannot open file '%s'\n", filename); return; }
+    char fileLine[4096];
+    while (fscanf(f, " %[^\n]", fileLine) != EOF) {
+        printf("  %s\n", fileLine);
+        double res = evalExpr(fileLine);
+        varSet("ans", res);
+        printf("  ");
+        printResult(res);
+    }
+    fclose(f);
 }
 
 
@@ -270,24 +277,20 @@ static char line[inputMax];
 int main(void) {
     puts("Vex Version 0.2.0");
     puts("Vex — Math Scripting Language by Students of Pulchowk");
-    puts("Commands: vars | funcs | consts | clear | exit");
+    puts("Commands: vars | funcs | consts | clear | open | exit");
     puts("Example:  x = 3 * pi   then   sin(x) + ans\n");
 
-    varSet("ans", 0.0);   
+    varSet("ans", 0.0);
 
     while (1) {
-        fputs("Vex> ", stdout);
-        fflush(stdout);
+        printf("Vex> ");
+        if (!fgets(line, inputMax, stdin)) break;
 
-        if (!fgets(line, inputMax, stdin)) break;   
-
-        
         int end = (int)strlen(line) - 1;
         while (end >= 0 && isspace((unsigned char)line[end])) line[end--] = '\0';
 
-        if (line[0] == '\0') continue;   
+        if (line[0] == '\0') continue;
 
-        
         if (strcmp(line, "exit") == 0 || strcmp(line, "quit") == 0) break;
 
         if (strcmp(line, "vars") == 0) {
@@ -317,15 +320,21 @@ int main(void) {
         }
 
         if (strcmp(line, "clear") == 0) {
-            
-            double lastAns = varStore[0].value;   
+            double lastAns = varStore[0].value;
             varCount = 0;
             varSet("ans", lastAns);
             puts("Variables cleared.");
             continue;
         }
 
-        
+        if (strcmp(line, "open") == 0) {
+            char fname[512];
+            printf("Enter filename: ");
+            scanf("%s", fname);
+            runFile(fname);
+            continue;
+        }
+
         double res = evalExpr(line);
         varSet("ans", res);
         printResult(res);
