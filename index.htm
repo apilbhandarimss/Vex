@@ -10,7 +10,7 @@
     --bg:        #0d0f0e;
     --surface:   #141714;
     --border:    #232823;
-    --accent:    #a8ff78;
+    --accent:    #a8fc78;
     --accent2:   #78c8ff;
     --accent3:   #ff9d78;
     --muted:     #4a5249;
@@ -760,7 +760,7 @@ gcc vex.c -o vex -lm
     <h2>Full Session Examples</h2>
 
     <h3>Finance: Compound interest</h3>
-    <p>Rajan deposits <strong>Rs. 45,000</strong> at <strong>8% p.a. compounded quarterly</strong> for 3 years. He then reinvests the full amount plus a <strong>Rs. 5,000 bonus</strong> at <strong>10% p.a. compounded monthly</strong> for 2 more years. VEX chains the two phases using <code>ans</code>, carrying full double precision throughout — no rounding errors from intermediate steps.</p>
+    <p>Ganesh deposits <strong>Rs. 45,000</strong> at <strong>8% p.a. compounded quarterly</strong> for 3 years. He then reinvests the full amount plus a <strong>Rs. 5,000 bonus</strong> at <strong>10% p.a. compounded monthly</strong> for 2 more years. VEX chains the two phases using <code>ans</code>, carrying full double precision throughout — no rounding errors from intermediate steps.</p>
     <div class="repl">
       <div class="repl-header"><div class="repl-dot r"></div><div class="repl-dot y"></div><div class="repl-dot g"></div> Compound interest — two-phase investment</div>
       <div class="repl-body">
@@ -782,7 +782,7 @@ gcc vex.c -o vex -lm
         <div class="repl-comment">── Phase 2: Nepal Investment Bank — 10% p.a., monthly, 2 years ──</div>
         <div class="repl-line" style="margin-top:8px"><span class="repl-prompt">Vex&gt;</span> <span class="repl-input">ans = ans*(1 + 0.10/12)^(12*2)</span></div>
         <div class="repl-output">= 75750.7</div>
-        <div class="repl-comment">→ final amount after full 5-year journey</div>
+        <div class="repl-comment">→ final amount after full 5-year </div>
       </div>
     </div>
     <div class="callout note">
