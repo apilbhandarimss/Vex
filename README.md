@@ -5,7 +5,7 @@
 
 ---
 
-## 📖 Overview
+## Overview
 
 **Vex** is an easy-to-use, interactive command-line math evaluator and scripting language. It allows you to perform complex mathematical operations, define custom variables, and utilize a wide array of built-in constants and functions instantly from your terminal!
 
